@@ -956,7 +956,10 @@ static void _find_travel_pos(const coord_def& youpos, int *move_x, int *move_y)
     {
         coord_def unseen = coord_def();
         for (adjacent_iterator ai(dest); ai; ++ai)
-            if (!you.see_cell(*ai) && !env.map_knowledge(*ai).seen())
+            // Fix: Add in_bounds(*ai) — boundary tiles can never hold monsters or interesting content
+            // Only playable in_bounds tiles are candidates for a lurking threat
+            // The redirect now only fires for genuinely unexplored playable tiles
+            if (in_bounds(*ai) && !you.see_cell(*ai) && !env.map_knowledge(*ai).seen())
             {
                 unseen = *ai;
                 break;
